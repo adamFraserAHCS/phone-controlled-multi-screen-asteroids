@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello world</title>
+    </head>
+        <script src = "/socket.io/socket.io.js"></script>
+    <body>
+        <canvas id="canvas" width="500" height="500"></canvas>
+    </body>
+    <script>
+        var socket = io('/displaySpace');
+        socket.on('positionChange',function(data) {
+            player.x += data.x;
+            player.y += data.y;
+        });
+
+        var player = {
+            x: 250,
+            y: 250,
+            render: function(ctx) {
+                ctx.beginPath();
+                ctx.fillStyle = 'rgb(255,255,255)';
+                ctx.arc(this.x,this.y,10,0,Math.PI*2);
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        function render() {
+            ctx.fillStyle = 'rgb(0,0,0)';
+            ctx.fillRect(0,0,500,500);
+            player.render(ctx);
+        }
+
+        setInterval(render, 1000/30);
+    </script>
+</html>
