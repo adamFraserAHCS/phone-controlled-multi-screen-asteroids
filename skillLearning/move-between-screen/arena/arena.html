@@ -2,18 +2,41 @@
 <html>
     <head>
         <title>Arena</title>
-    </head>
+        <style>
+            html, body {
+                margin: 0px;
+                padding: 0px;
+            }
+        </style>
         <script src = "/socket.io/socket.io.js"></script>
+    </head>
+        
     <body>
-        <canvas id="canvas" width="500" height="500"></canvas>
+        <canvas id="canvas"></canvas>
     </body>
     <script>
-        var socket = io('/arenaSpace');
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
 
+        var width = canvas.width = window.innerWidth - 2;
+        var height = canvas.height = window.innerHeight - 2;
+
+        var socket = io('/arenaSpaceLeft');
+
+        socket.on('recieve entity', function(data) {
+            if(data.isLeft) {
+                entity.x = width;
+            } else {
+                entity.x = 0;
+            }
+            entity.y = data.y;
+            entity.vX = data.vX;
+            
+            renderEntity = true;
+        });
+
+        var renderEntity = false;
         var entity = {
-            x: 250,
-            y: 250,
-            vX: 2,
             render: function(ctx) {
                 ctx.beginPath();
                 ctx.fillStyle = 'rgb(255,255,255)';
@@ -23,21 +46,26 @@
             },
             update: function() {
                 this.x += this.vX;
-                this.y += this.vY;
+                if(this.x > width || this.x < 0) { 
+                    var isLeft = this.x < 0
+                    socket.emit('switchScreens', {isLeft: isLeft, y: this.y, vX: this.vX});
+                    renderEntity = false;
+                }
             }
         }
 
-        var canvas = document.getElementById('canvas');
-        var ctx = canvas.getContext('2d');
-
         function render() {
             ctx.fillStyle = 'rgb(0,0,0)';
-            ctx.fillRect(0,0,500,500);
-            player.render(ctx);
+            ctx.fillRect(0,0,width,height);
+            if(renderEntity) {
+                entity.render(ctx);
+            }
         }
 
         function update() {
-            player.update();
+            if(renderEntity) {
+                entity.update();
+            }
         }
 
         function loop() {

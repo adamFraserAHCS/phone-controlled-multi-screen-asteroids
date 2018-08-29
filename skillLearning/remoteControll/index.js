@@ -15,6 +15,10 @@ app.get('/control', function(req, res) {
     res.sendFile(path.join(__dirname, 'control/control.html'));
 });
 
+app.get('/control2', function(req, res) {
+    res.sendFile(path.join(__dirname, 'control/control2.html'));
+});
+
 var displaySpace = io.of('/displaySpace');
 var controlSpace = io.of('/controlSpace');
 controlSpace.on('connection', function(socket) {

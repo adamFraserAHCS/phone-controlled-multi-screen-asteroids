@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello world</title>
+        <title>Arena</title>
         <style>
             html, body {
                 margin: 0px;
                 padding: 0px;
             }
+            
         </style>
+        
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
         <script src = "/socket.io/socket.io.js"></script>
     <body>
-        <canvas id="canvas"></canvas>
+        <canvas id="canvas" ></canvas>
     </body>
     <script>
         var canvas = document.getElementById('canvas');
@@ -20,18 +23,22 @@
         var width = canvas.width = window.innerWidth;
         var height = canvas.height = window.innerHeight;
 
-        var socket = io('/displaySpace');
-        socket.on('positionChange',function(data) {
-            player.vX += parseInt(data.x);
-            player.vY += parseInt(data.y);
-            // alert (player.vX + "\t" + player.vY);
+        var socket = io('/arenaSpaceRight');
+
+        socket.on('recieve entity', function(data) {
+            if(data.isLeft) {
+                entity.x = width;
+            } else {
+                entity.x = 0;
+            }
+            entity.y = data.y;
+            entity.vX = data.vX;
+            
+            renderEntity = true;
         });
 
-        var player = {
-            x: 250,
-            y: 250,
-            vX: 0,
-            vY: 0,
+        var renderEntity = false;
+        var entity = {
             render: function(ctx) {
                 ctx.beginPath();
                 ctx.fillStyle = 'rgb(255,255,255)';
@@ -40,30 +47,26 @@
                 ctx.closePath();
             },
             update: function() {
-                if(Math.abs(this.vX) < 0.05) { this.vX = 0; }
-                if(Math.abs(this.vY) < 0.05) { this.vY = 0; }
-
                 this.x += this.vX;
-                this.y += this.vY;
-
-                this.vX *= 0.95;
-                this.vY *= 0.95;
-
-                if(this.x > width) { this.x = 0; }
-                else if(this.x < 0) {this.x = width};
-                if(this.y > height) { this.y = 0; }
-                else if(this.y < 0) {this.y = height};
+                // if(this.x > width || this.x < 0) { 
+                //     var isLeft = this.x < 0
+                //     socket.emit('switchScreens', {isLeft: isLeft, y: this.y, vX: this.vX})
+                // }
             }
         }
 
         function render() {
             ctx.fillStyle = 'rgb(0,0,0)';
             ctx.fillRect(0,0,width,height);
-            player.render(ctx);
+            if(renderEntity) {
+                entity.render(ctx);
+            }
         }
 
         function update() {
-            player.update();
+            if(renderEntity) {
+                entity.update();
+            }
         }
 
         function loop() {

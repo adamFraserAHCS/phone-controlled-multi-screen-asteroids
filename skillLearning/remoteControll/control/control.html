@@ -13,9 +13,9 @@
     <script>
         var socket = io('/controlSpace');
 
-        function left() { socket.emit('controlerSayMove', {x:-10, y:0}); }
-        function right() { socket.emit('controlerSayMove', {x:10, y:0}); }
-        function up() { socket.emit('controlerSayMove', {x:0, y:-10}); }
-        function down() { socket.emit('controlerSayMove', {x:0, y:10}); }
+        function left() { socket.emit('controlerSayMove', {x:-2, y:0}); }
+        function right() { socket.emit('controlerSayMove', {x:2, y:0}); }
+        function up() { socket.emit('controlerSayMove', {x:0, y:-2}); }
+        function down() { socket.emit('controlerSayMove', {x:0, y:2}); }
     </script>
 </html>
