@@ -1,25 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello world</title>
+        <title>Arena</title>
     </head>
         <script src = "/socket.io/socket.io.js"></script>
     <body>
         <canvas id="canvas" width="500" height="500"></canvas>
     </body>
     <script>
-        var socket = io('/displaySpace');
-        socket.on('positionChange',function(data) {
-            player.vX += parseInt(data.x);
-            player.vY += parseInt(data.y);
-            // alert (player.vX + "\t" + player.vY);
-        });
+        var socket = io('/arenaSpace');
 
-        var player = {
+        var entity = {
             x: 250,
             y: 250,
-            vX: 0,
-            vY: 0,
+            vX: 2,
             render: function(ctx) {
                 ctx.beginPath();
                 ctx.fillStyle = 'rgb(255,255,255)';
@@ -28,14 +22,8 @@
                 ctx.closePath();
             },
             update: function() {
-                if(Math.abs(this.vX) < 0.05) { this.vX = 0; }
-                if(Math.abs(this.vY) < 0.05) { this.vY = 0; }
-
                 this.x += this.vX;
                 this.y += this.vY;
-
-                this.vX *= 0.95;
-                this.vY *= 0.95;
             }
         }
 

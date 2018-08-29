@@ -4,18 +4,11 @@ var http = require('http').Server(app); //why?
 var path = require('path');
 var io = require('socket.io')(http);
 
-app.use('/display', express.static(path.join(__dirname, 'display/')));
-app.use('/control', express.static(path.join(__dirname, 'control/')));
-
-app.get('/display', function(req, res) {
-    res.sendFile(path.join(__dirname, 'display/display.html'));
+app.get('/', function(req, res) {
+    res.sendFile(path.join(__dirname, 'arena/arena.html'));
 });
 
-app.get('/control', function(req, res) {
-    res.sendFile(path.join(__dirname, 'control/control.html'));
-});
-
-var displaySpace = io.of('/displaySpace');
+var displaySpace = io.of('/arenaSpace');
 var controlSpace = io.of('/controlSpace');
 controlSpace.on('connection', function(socket) {
     socket.on('controlerSayMove', function(data) {
