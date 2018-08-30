@@ -21,7 +21,7 @@
         var width = canvas.width = window.innerWidth - 2;
         var height = canvas.height = window.innerHeight - 2;
 
-        var socket = io('/arenaSpaceLeft');
+        var socket = io('/arenaSpace');
 
         socket.on('recieve entity', function(data) {
             if(data.isLeft) {

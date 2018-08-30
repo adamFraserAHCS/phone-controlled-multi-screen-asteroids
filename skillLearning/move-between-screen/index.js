@@ -12,16 +12,34 @@ app.get('/2', function(req, res) {
     res.sendFile(path.join(__dirname, 'arena/arena2.html'));
 });
 
-var arenaLeft = io.of('/arenaSpaceLeft');
+var arena = io.of('/arenaSpace');
 var arenaRight = io.of('/arenaSpaceRight');
 
-arenaLeft.on('connection', function(socket) {
+var displays = [];
+
+arena.on('connection', function(socket) {
+
+    displays.push(socket.id);
+
     socket.emit('recieve entity', {isLeft: false, y:250, vX:9});
 
     socket.on('switchScreens', function(data){
-        arenaRight.emit('recieve entity', {isLeft: data.isLeft, y: data.y, vX: data.vX});
+        console.log(getNextSreen(socket.id));
+        // io.sockets[getNextSreen(socket.id)].emit('recieve entity', {isLeft: data.isLeft, y: data.y, vX: data.vX});
     })
 });
+
+function getNextSreen(socketID) {
+    for(var i = 0; i < displays.length; i++) {
+        if(displays[i] == socketID) {
+            if(i = displays.length - 1) {
+                return displays[0];
+            } else {
+                return displays[i + 1];
+            }
+        }
+    }
+}
 
 http.listen(3000, '0.0.0.0', function() {
     console.log('listening on *:3000');
