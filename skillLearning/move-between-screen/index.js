@@ -21,22 +21,43 @@ arena.on('connection', function(socket) {
 
     displays.push(socket.id);
 
-    socket.emit('recieve entity', {isLeft: false, y:250, vX:9});
+    // socket.emit('recieve entity', {isLeft: false, y:250, vX:9});
+
+    socket.on('ooh pick me!', function(data) {
+        socket.emit('recieve entity', {isLeft: true, y: 250, vX: 12});
+    })
 
     socket.on('switchScreens', function(data){
-        console.log(getNextSreen(socket.id));
-        // io.sockets[getNextSreen(socket.id)].emit('recieve entity', {isLeft: data.isLeft, y: data.y, vX: data.vX});
+        var sendTo = getNextScreen(socket.id, data.isLeft);
+        console.log(sendTo);
+        var data2Send = {
+            'isLeft': data.isLeft,
+            'vX': data.vX,
+            'vY': data.vY,
+            'y': data.y
+        }
+        arena.emit('recieve entity', {isLeft: data.isLeft, y: data.y, vX: data.vX});
     })
 });
 
-function getNextSreen(socketID) {
+function getNextScreen(currentScrID, isLeft) {
     for(var i = 0; i < displays.length; i++) {
-        if(displays[i] == socketID) {
-            if(i = displays.length - 1) {
-                return displays[0];
-            } else {
-                return displays[i + 1];
-            }
+        if(displays[i] == currentScrID) { break; }
+    }
+
+    // if the asteroid is coming from the left
+    //of one screen to the right of annother
+    if(isLeft) {
+        if(i == 0) {
+            return displays[displays.length - 1];
+        } else {
+            return displays[i - 1];
+        }
+    } else {
+        if(i == displays.length - 1) {
+            return displays[0];
+        } else {
+            return displays[i + 1];
         }
     }
 }

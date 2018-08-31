@@ -25,9 +25,9 @@
 
         socket.on('recieve entity', function(data) {
             if(data.isLeft) {
-                entity.x = width;
-            } else {
                 entity.x = 0;
+            } else {
+                entity.x = width;
             }
             entity.y = data.y;
             entity.vX = data.vX;
@@ -66,6 +66,10 @@
             if(renderEntity) {
                 entity.update();
             }
+        }
+
+        if(prompt("hello") == "1") {
+            socket.emit('ooh pick me!');
         }
 
         function loop() {
