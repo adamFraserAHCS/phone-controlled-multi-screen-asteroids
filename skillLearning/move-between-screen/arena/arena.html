@@ -17,12 +17,9 @@
     <script>
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
-
         var width = canvas.width = window.innerWidth - 2;
         var height = canvas.height = window.innerHeight - 2;
-
         var socket = io('/arenaSpace');
-
         socket.on('recieve entity', function(data) {
             if(data.isLeft) {
                 entity.x = 0;
@@ -31,10 +28,10 @@
             }
             entity.y = data.y;
             entity.vX = data.vX;
+            entity.vY = data.vY
             
             renderEntity = true;
         });
-
         var renderEntity = false;
         var entity = {
             render: function(ctx) {
@@ -46,14 +43,18 @@
             },
             update: function() {
                 this.x += this.vX;
+                this.y += this.vY;
+
+                if(this.y > height) { this.y = 0; }
+                else if(this.y < 0) {this.y = height}
+
                 if(this.x > width || this.x < 0) { 
-                    var isLeft = this.x < 0
-                    socket.emit('switchScreens', {isLeft: isLeft, y: this.y, vX: this.vX});
+                    var isLeft = this.x <= 0
+                    socket.emit('switchScreens', {isLeft: isLeft, y: this.y, vX: this.vX, vY: this.vY});
                     renderEntity = false;
                 }
             }
         }
-
         function render() {
             ctx.fillStyle = 'rgb(0,0,0)';
             ctx.fillRect(0,0,width,height);
@@ -61,17 +62,11 @@
                 entity.render(ctx);
             }
         }
-
         function update() {
             if(renderEntity) {
                 entity.update();
             }
         }
-
-        if(prompt("hello") == "1") {
-            socket.emit('ooh pick me!');
-        }
-
         function loop() {
             update();
             render();
