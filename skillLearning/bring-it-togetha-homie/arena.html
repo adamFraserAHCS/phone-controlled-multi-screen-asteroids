@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Arena</title>
+        <style>
+            html, body {
+                margin: 0px;
+                padding: 0px;
+            }
+        </style>
+        <script src = "/socket.io/socket.io.js"></script>
+    </head>
+        
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var width = canvas.width = window.innerWidth - 2;
+        var height = canvas.height = window.innerHeight - 2;
+        var socket = io('/arenaSpace');
+        socket.on('accelerationCmd', function(data) {
+            entity.vX += parseFloat(data.ax);
+            entity.vY += parseFloat(data.ay);
+
+            entity.vX *= 0.90;
+            entity.vY *= 0.90;
+
+            console.log("ax: " + data.ax);
+            console.log("ay: " + data.ay + "\n\n\n")
+        });
+        socket.on('recieve entity', function(data) {
+            if(data.isLeft) {
+                entity.x = 0;
+            } else {
+                entity.x = width;
+            }
+            entity.y = data.y;
+            entity.vX = data.vX;
+            entity.vY = data.vY
+            
+            renderEntity = true;
+        });
+        var renderEntity = false;
+        var entity = {
+            render: function(ctx) {
+                ctx.beginPath();
+                ctx.fillStyle = 'rgb(255,255,255)';
+                ctx.arc(this.x,this.y,10,0,Math.PI*2);
+                ctx.fill();
+                ctx.closePath();
+            },
+            update: function() {
+                this.x += this.vX;
+                this.y += this.vY;
+
+                if(this.y > height) { this.y = 0; }
+                else if(this.y < 0) {this.y = height}
+
+                if(this.x > width || this.x < 0) { 
+                    var isLeft = this.x <= 0
+                    socket.emit('switchScreens', {isLeft: isLeft, y: this.y, vX: this.vX, vY: this.vY});
+                    renderEntity = false;
+                }
+            }
+        }
+
+        function render() {
+            ctx.fillStyle = 'rgb(0,0,0)';
+            ctx.fillRect(0,0,width,height);
+            if(renderEntity) {
+                entity.render(ctx);
+            }
+        }
+        function update() {
+            if(renderEntity) {
+                entity.update();
+            }
+        }
+        function loop() {
+            update();
+            render();
+        }
+        setInterval(loop, 1000/30);
+    </script>
+</html>
