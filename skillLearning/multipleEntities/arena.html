@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Arena</title>
+        <style>
+            html, body {
+                margin: 0px;
+                padding: 0px;
+            }
+        </style>
+        <script src = "/socket.io/socket.io.js"></script>
+    </head>
+        
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+    <script>
+        var entities = [];
+        function Entity(index) {
+
+            this.index = index;
+
+            this.render = function(ctx) {
+                ctx.beginPath();
+                ctx.fillStyle = 'rgb(255,255,255)';
+                ctx.arc(this.x,this.y,10,0,Math.PI*2);
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            this.update = function() {
+                this.x += this.vX;
+                this.y += this.vY;
+
+                if(this.y > height) { this.y = 0; }
+                else if(this.y < 0) {this.y = height}
+
+                if(this.x > width || this.x < 0) { 
+                    var isLeft = this.x <= 0
+                    socket.emit('switchScreens', {isLeft: isLeft, y: this.y, vX: this.vX, vY: this.vY});
+                    entities.splice(index,1);
+                }
+            }
+        }
+
+        var socket = io('/arenaSpace');
+
+        socket.on('accelerationCmd', function(data) {
+            for(var i = 0; i < entities.length; i++) {
+                entities[i].vX += parseFloat(data.ax);
+                entities[i].vY += parseFloat(data.ay);
+
+                entities[i].vX *= 0.90;
+                entities[i].vY *= 0.90;
+            }
+        });
+
+        socket.on('recieve entity', function(data) {
+            var newPosition = entities.length;
+            entities.push(new Entity(newPosition));
+
+            if(data.isLeft) {
+                entities[newPosition].x = 0;
+            } else {
+                entities[newPosition].x = width;
+            }
+            entities[newPosition].y = data.y;
+            entities[newPosition].vX = data.vX;
+            entities[newPosition].vY = data.vY;            
+        });
+
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        var width = canvas.width = window.innerWidth - 2;
+        var height = canvas.height = window.innerHeight - 2;
+
+
+        function render() {
+            ctx.fillStyle = 'rgb(0,0,0)';
+            ctx.fillRect(0,0,width,height);
+            for(var i = 0; i < entities.length; i++) { 
+                entities[i].render(ctx);
+            }
+        }
+        function update() {
+            for(var i = 0; i < entities.length; i++) { 
+                entities[i].update(ctx);
+            }
+        }
+        function loop() {
+            update();
+            render();
+        }
+        setInterval(loop, 1000/30);
+    </script>
+</html>

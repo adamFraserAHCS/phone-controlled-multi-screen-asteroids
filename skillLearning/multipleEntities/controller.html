@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <script src = "/socket.io/socket.io.js"></script>
+        <style>
+            html,body {
+                margin: 0px;
+                padding: 0px;
+
+            }
+        </style>
+    </head>
+
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+
+    <script>
+        var socket = io('/controlSpace');
+
+        document.addEventListener("touchstart", touchHandler);
+        document.addEventListener("touchmove", touchHandler);
+        document.addEventListener("touchend", touchEnded)
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        var scrWidth = canvas.width = window.innerWidth;
+        var scrHeight = canvas.height = window.innerHeight;
+
+        var ax = 0, ay = 0;
+        var drawX = scrWidth / 2, drawY = scrHeight / 2;
+
+        function touchHandler(e) {
+            if(e.touches) {
+                //dependant on scr size
+                drawX = e.touches[0].pageX;
+                drawY = e.touches[0].pageY;
+
+                ax = parseFloat(((e.touches[0].pageX - (scrWidth / 2)) / 200).toPrecision(3))
+                ay = parseFloat(((e.touches[0].pageY - (scrHeight / 2)) / 400).toPrecision(3))
+            
+                e.preventDefault(); //stops mouse handler taking over
+            }
+        }
+
+        function touchEnded() {
+            ax = 0;
+            ay = 0;
+
+            drawX = scrWidth / 2; 
+            drawY = scrHeight / 2;
+        }
+
+        function movementHandler() {
+            if(Math.abs(ax) > 0 || Math.abs(ay) > 0) {
+                socket.emit('controlerSayMove', {ax:ax, ay:ay});
+            }
+
+            ctx.clearRect(0,0,scrWidth,scrHeight);
+            ctx.fillStyle='rgb(0,100,255)';
+            ctx.fillRect(0,0,scrWidth,scrHeight);
+            ctx.beginPath();
+                ctx.fillStyle = 'rgb(255,0,100)';
+                ctx.arc(drawX, drawY, 50, 0, Math.PI * 2);
+                ctx.fill();
+            ctx.closePath();
+        }
+
+        setInterval(movementHandler, 1000/30);
+    </script>
+</html>
