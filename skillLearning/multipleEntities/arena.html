@@ -16,9 +16,9 @@
     </body>
     <script>
         var entities = [];
-        function Entity(index) {
+        function Entity(ID) {
 
-            this.index = index;
+            this.ID = ID;
 
             this.render = function(ctx) {
                 ctx.beginPath();
@@ -38,7 +38,7 @@
                 if(this.x > width || this.x < 0) { 
                     var isLeft = this.x <= 0
                     socket.emit('switchScreens', {isLeft: isLeft, y: this.y, vX: this.vX, vY: this.vY});
-                    entities.splice(index,1);
+                    removeEntity(ID);
                 }
             }
         }
@@ -55,9 +55,12 @@
             }
         });
 
+        var currentID = 0;
         socket.on('recieve entity', function(data) {
             var newPosition = entities.length;
-            entities.push(new Entity(newPosition));
+            
+            currentID ++;
+            entities.push(new Entity(currentID));
 
             if(data.isLeft) {
                 entities[newPosition].x = 0;
@@ -66,7 +69,8 @@
             }
             entities[newPosition].y = data.y;
             entities[newPosition].vX = data.vX;
-            entities[newPosition].vY = data.vY;            
+            entities[newPosition].vY = data.vY;     
+            entities[newPosition].UID = data.UID       
         });
 
 
@@ -91,6 +95,14 @@
         function loop() {
             update();
             render();
+        }
+
+        function removeEntity(ID) {
+            for(var i = 0; i < entities.length; i++) {
+                if(entities[i].ID == ID) {
+                    entities.splice(i,1);
+                }
+            }
         }
         setInterval(loop, 1000/30);
     </script>

@@ -36,7 +36,7 @@ arenaSpace.on('connection', function(socket) {
     })
 
     if(!ballSent) {
-        socket.emit('recieve entity', {isLeft: true, y:400, vY: 0, vX:0});
+        socket.emit('recieve entity', {isLeft: true, y:400, vY: 0, vX:2});
         currentDisplay = socket;
 
         socket.emit('recieve entity', {isLeft: true, y:100, vY: 0, vX:0});
