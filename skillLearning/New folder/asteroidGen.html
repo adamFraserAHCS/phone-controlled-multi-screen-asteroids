@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<!-- TODO FIX MOVEMENT SYSTEM SO IT TAPRES INSTEAD OF STOPPING -->
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>ship drawing</title>
+
+        <style>
+            html, body {
+                margin: 0px;
+                padding: 0px;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+
+    <script>
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+
+        var scrWidth = canvas.width = window.innerWidth - 10;
+        var scrHeight = canvas.height = window.innerHeight - 10;
+
+        var player = {
+            x: scrWidth / 2,
+            vx: 0,
+            vy: 0,
+            y: scrHeight / 2,
+            r: 40,
+            θ: 0
+        }
+
+        var count = 0;
+        function loop() {
+            
+            ctx.fillStyle = 'rgb(0,0,0)';
+            ctx.fillRect(0,0,scrWidth,scrHeight);
+
+            var nose = getPoint(player.r, player.θ);
+                nose = {x: player.x + nose.Δx, y: player.y + nose.Δy}
+
+            var rightTail = getPoint(player.r, player.θ + 120);
+                rightTail = {x: player.x + rightTail.Δx, y: player.y + rightTail.Δy}
+
+            var leftTail = getPoint(player.r, player.θ + 240);
+                leftTail = {x: player.x + leftTail.Δx, y: player.y + leftTail.Δy}
+            
+
+            ctx.strokeStyle = 'rgb(255,255,255)';
+            ctx.lineWidth = "2"
+            
+            ctx.fillStyle = 'rgb(255,255,255)';
+            ctx.beginPath();
+                ctx.moveTo(nose.x, nose.y);
+                ctx.lineTo(rightTail.x, rightTail.y);
+                ctx.lineTo(player.x, player.y);
+                ctx.lineTo(leftTail.x, leftTail.y);
+                ctx.lineTo(nose.x, nose.y);
+
+                ctx.stroke();
+            ctx.closePath();
+
+            if(player.θ >= 360) {
+                player.θ = 0;
+            } else if(player.θ < 0) {
+                player.θ = 359
+            }
+
+            player.x += player.vx;
+            player.y += player.vy;
+
+            if(player.x > scrWidth) {
+                player.x = 0;
+            } else if(player.x < 0) {
+                player.x = scrWidth;
+            }
+
+            if(player.y > scrHeight) {
+                player.y = 0;
+            } else if(player.y < 0) {
+                player.y = scrHeight;
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+
+        function getMagnitude(x,y) {
+            return Math.sqrt((x*x) + (y*y));
+        }
+
+        function getPoint(r,θ) {
+
+            Δx = Math.cos(θ / 180 * Math.PI) * r;
+            Δy = Math.sin(θ / 180 * Math.PI) * r;
+
+            return {Δx: Δx, Δy: Δy}
+        }
+
+        window.addEventListener("keydown", keyPressed, false);
+        window.addEventListener("keyup", keyReleased, false);
+
+        var keys = [];
+        function keyPressed(e) {
+            keys[e.keyCode] = true;
+        }
+
+        function keyReleased(e) {
+            keys[e.keyCode] = false;
+        }
+
+        function keyManager() {
+            if(keys[38]) {
+                var vect = getPoint(1, player.θ);
+
+                if(getMagnitude(player.vx, player.vy) < 10) {
+                    player.vx += vect.Δx;
+                    player.vy += vect.Δy;
+                } else {
+                    player.vx *= 0.99;
+                    player.vy *= 0.99;
+                }
+ 
+            }
+            if(keys[40]) {
+                var vect = getPoint(1, player.θ);
+
+                if(getMagnitude(player.vx, player.vy) < 10) {
+                    player.vx -= vect.Δx;
+                    player.vy -= vect.Δy;
+                } else {
+                    player.vx *= 0.99;
+                    player.vy *= 0.99;
+                }
+            }
+            if(keys[37]) {
+                player.θ -= 3;
+            }
+            if(keys[39]) {
+                player.θ += 3;
+            }
+        }
+
+        setInterval(keyManager, 1000/30);
+    </script>
+</html>
