@@ -1,0 +1,49 @@
+Ideas for efficient and accurate asteroid collision detection
+===============================================================
+
+DETECTION BY RADIUS RESULTS IN UNACEPTABLE INACCURACY AND ITS SHIT
+
+adjacency detection
+	keep a reccord of all the adjacent pixels of an asteroid
+	if a player or bolt intersects this region preform some action.
+
+	+v accurate and "realistic" / immersive
+
+	-extremely difficult
+	-might not even be an improvement (actually it'd probs be worse)
+
+bounding boxes
+	have lots of sufficiently small bounding boxes for it to be fair
+	if a player or bolt intersects this box preform some action
+	
+	+would be really cool to implement
+	+lots of room for optimisation
+	+simple asteroids would be less demanding
+	+once boxes are generated it would be very unintensive
+
+	-would be difficult
+	-the algorithm may involve maths you don't have
+	-it may be very intensive to generate boxes
+
+radius detection
+	simply approximate the asteroid to a circle and detect if the entity
+	intersects that circle using simple maths
+	
+	+super easy
+	
+	-very unimersive
+	-have to do calc for every entity * every asteroid (could be V intensive)
+	-not a challange
+
+hybrid system between bounding box and adjaceny detetction.
+	draw a box that just fits the asteroid. if the player intersects this box...
+	switch over to adjaccency detection
+
+	+would be awesome if it works
+	+could be V efficient
+	+low intensity when not in bounding box
+
+	-V difficult to build
+	-still have to calculate pixel adjacencies
+
+	

@@ -1,9 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="gant chart for ADV H CS" company="me" webLink="http://" view-date="2018-09-13" view-index="0" gantt-divider-location="636" resource-divider-location="300" version="2.8.9" locale="en_GB">
+<?xml version="1.0" encoding="UTF-8"?><project name="gant chart for ADV H CS" company="me" webLink="http://" view-date="2018-09-05" view-index="0" gantt-divider-location="636" resource-divider-location="300" version="2.8.9" locale="en_GB">
     <description/>
     <view zooming-state="default:1" id="gantt-chart">
-        <field id="tpd3" name="Name" width="284" order="0"/>
-        <field id="tpd4" name="Begin date" width="167" order="1"/>
-        <field id="tpd5" name="End date" width="166" order="2"/>
+        <field id="tpd3" name="Name" width="15" order="0"/>
+        <field id="tpd4" name="Begin date" width="15" order="1"/>
+        <field id="tpd5" name="End date" width="15" order="2"/>
+        <field id="tpc0" name="Completed" width="15" order="3"/>
+        <field id="tpc1" name="notes / comments" width="15" order="4"/>
+        <field id="tpc2" name="subheadings" width="15" order="5"/>
+        <field id="tpd6" name="Duration" width="542" order="6"/>
         <timeline><![CDATA[3]]></timeline>
         <option id="color.recent"><![CDATA[#ff0000 #9600ff #00c8ff #00ff00 #f4f400 #fffff4 #ff9600]]></option>
     </view>

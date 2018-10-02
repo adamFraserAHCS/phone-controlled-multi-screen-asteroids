@@ -1,0 +1,26 @@
+ASTEROID DETECTION ALGORITHM (S)
+================================
+
+PART 1 GENERAL BOUNDING BOX
+----------------------------
+$ create a general bounding box with w & h just enough to fit asteroid
+$ if a player interesects this box then switch to part 2 (specific)
+$ bounding box.
+	+ a general bounding box is much more efficient than
+	  lots of specific bounding boxes since they would have
+	  to be rendered every frame
+
+
+PART 2 SPECIFIC BOUNDING BOXES
+-------------------------------
+$ use some algorithm (TBD) to fit smaller bounding boxes as closely
+$ as possible to the asteroid shape then store this configuration with
+$ refference to the position of the asteroid
+	+ far less intensive (and easier) than an adjacency algo
+	+ an adjacency algo would only check at borders potentially
+	  creating a safe zone within the asteroid, this method has
+	  no such flaw
+	
+	- due to the asteroids not being cubic shapes there will be
+	  a neccesary sacrafice in realism (pollygons seem like an
+	  improvement?)
